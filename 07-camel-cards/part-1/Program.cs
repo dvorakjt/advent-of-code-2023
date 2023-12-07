@@ -27,4 +27,4 @@ for(int i = 0; i < hands.Count; i++)
   totalWinnings += hand.GetWinnings(overallRank);
 }
 
-Console.WriteLine(totalWinnings);
+Console.WriteLine($"The total winnings from all hands is: {totalWinnings}");

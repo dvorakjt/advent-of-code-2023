@@ -5,10 +5,10 @@ struct Hand : IComparable<Hand>
   private HandType Type;
   private int Bid;
 
-  public Hand(string input)
+  public Hand(string round)
   {
-    Cards = input.Substring(0, Size);
-    Bid = int.Parse(input.Substring(Size + 1).Trim());
+    Cards = round.Substring(0, Size);
+    Bid = int.Parse(round.Substring(Size + 1).Trim());
     Type = GetHandType();
   }
 
