@@ -24,7 +24,7 @@ for(int i = 0; i < hands.Count; i++)
   Hand hand = hands[i];
   int overallRank = i + 1;
   
-  totalWinnings += hand.GetWinnings(overallRank++);
+  totalWinnings += hand.GetWinnings(overallRank);
 }
 
 Console.WriteLine(totalWinnings);
