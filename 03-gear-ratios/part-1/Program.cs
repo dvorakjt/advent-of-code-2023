@@ -7,57 +7,6 @@ if (!File.Exists(inputFilePath))
 
 string[] input = File.ReadAllLines(inputFilePath);
 
-Predicate<char> isSymbol = c => {
-  return c != '.' && (c - '0' < 0 || c - '0' > 9);
-};
-
-Predicate<(int Line, int StartIndex, int EndIndex)> isAdjacentToSymbol = location => {
-  var (Line, StartIndex, EndIndex) = location;
-
-  if(Line > 0)
-  {
-    int s = StartIndex > 0 ? StartIndex - 1 : StartIndex;
-    int e = EndIndex + 1 < input[Line - 1].Length ? EndIndex + 1 : EndIndex;
-
-    for(int i = s; i <= e; i++) {
-      char c = input[Line - 1][i];
-      if(isSymbol(c))
-      {
-        return true;
-      }
-    }
-  }
-  if(StartIndex > 0)
-  {
-    if(isSymbol(input[Line][StartIndex - 1]))
-    {
-      return true;
-    }
-  }
-  if(EndIndex < input[Line].Length - 1)
-  {
-    if(isSymbol(input[Line][EndIndex + 1]))
-    {
-      return true;
-    }
-  }
-  if(Line < input.Length - 1)
-  {
-    int s = StartIndex > 0 ? StartIndex - 1 : StartIndex;
-    int e = EndIndex + 1 < input[Line + 1].Length ? EndIndex + 1 : EndIndex;
-
-    for(int i = s; i <= e; i++) {
-      char c = input[Line + 1][i];
-      if(isSymbol(c))
-      {
-        return true;
-      }
-    }
-  }
-
-  return false;
-};
-
 int sum = 0;
 
 for(int i = 0; i < input.Length; i++)
@@ -79,7 +28,7 @@ for(int i = 0; i < input.Length; i++)
     }
     else if(currentNum.Length > 0)
     {
-      if(isAdjacentToSymbol((i, currentNumStartIndex, currentNumStartIndex + currentNum.Length - 1)))
+      if(IsAdjacentToSymbol(i, currentNumStartIndex, currentNumStartIndex + currentNum.Length - 1))
       {
         sum += int.Parse(currentNum);
       }
@@ -90,7 +39,7 @@ for(int i = 0; i < input.Length; i++)
   
   if(currentNum.Length > 0)
   {
-    if(isAdjacentToSymbol((i, currentNumStartIndex, currentNumStartIndex + currentNum.Length - 1)))
+    if(IsAdjacentToSymbol(i, currentNumStartIndex, currentNumStartIndex + currentNum.Length - 1))
     {
       sum += int.Parse(currentNum);
     }
@@ -98,3 +47,54 @@ for(int i = 0; i < input.Length; i++)
 }
 
 Console.WriteLine($"The sum of all part numbers is {sum}");
+
+bool IsSymbol(char c) 
+{
+  return c != '.' && (c - '0' < 0 || c - '0' > 9);
+};
+
+bool IsAdjacentToSymbol(int line, int startIndex, int endIndex)
+{
+  if(line > 0)
+  {
+    int s = startIndex > 0 ? startIndex - 1 : startIndex;
+    int e = endIndex + 1 < input[line - 1].Length ? endIndex + 1 : endIndex;
+
+    for(int i = s; i <= e; i++) {
+      char c = input[line - 1][i];
+      if(IsSymbol(c))
+      {
+        return true;
+      }
+    }
+  }
+  if(startIndex > 0)
+  {
+    if(IsSymbol(input[line][startIndex - 1]))
+    {
+      return true;
+    }
+  }
+  if(endIndex < input[line].Length - 1)
+  {
+    if(IsSymbol(input[line][endIndex + 1]))
+    {
+      return true;
+    }
+  }
+  if(line < input.Length - 1)
+  {
+    int s = startIndex > 0 ? startIndex - 1 : startIndex;
+    int e = endIndex + 1 < input[line + 1].Length ? endIndex + 1 : endIndex;
+
+    for(int i = s; i <= e; i++) {
+      char c = input[line + 1][i];
+      if(IsSymbol(c))
+      {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};

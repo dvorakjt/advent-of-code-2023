@@ -9,7 +9,19 @@ if(!File.Exists(inputFilePath))
 
 string[] input = File.ReadAllLines(inputFilePath);
 
-Func<int, int, int> countWaysToWin = (raceTime, recordDistance) =>
+List<int> raceTimes = new(Regex.Matches(input[0], @"\d+").Select(match => int.Parse(match.Value)));
+List<int> raceRecords = new(Regex.Matches(input[1], @"\d+").Select(match => int.Parse(match.Value)));
+
+int marginForError = 1;
+
+for(int i = 0; i < raceTimes.Count; i++)
+{
+  marginForError *= CountWaysToWin(raceTimes[i], raceRecords[i]);
+}
+
+Console.WriteLine($"The margin for error is {marginForError}");
+
+int CountWaysToWin(int raceTime, int recordDistance)
 {
   int chargingTime = 0;
   int possibleWaysToWin = 0;
@@ -21,15 +33,3 @@ Func<int, int, int> countWaysToWin = (raceTime, recordDistance) =>
 
   return possibleWaysToWin;
 };
-
-List<int> raceTimes = new(Regex.Matches(input[0], @"\d+").Select(match => int.Parse(match.Value)));
-List<int> raceRecords = new(Regex.Matches(input[1], @"\d+").Select(match => int.Parse(match.Value)));
-
-int marginForError = 1;
-
-for(int i = 0; i < raceTimes.Count; i++)
-{
-  marginForError *= countWaysToWin(raceTimes[i], raceRecords[i]);
-}
-
-Console.WriteLine($"The margin for error is {marginForError}");

@@ -9,12 +9,19 @@ if(!File.Exists(inputFilePath))
 
 string[] input = File.ReadAllLines(inputFilePath);
 
-Func<string, long> getTime = s =>
+long raceTime = GetTime(input[0]);
+long raceRecord = GetTime(input[1]);
+
+long waysToWin = CountWaysToWin(raceTime, raceRecord);
+
+Console.WriteLine($"The number of ways to win is {waysToWin}");
+
+long GetTime(string s)
 {
   return long.Parse(string.Join("", Regex.Matches(s, @"\d+").Select(match => match.Value)));
 };
 
-Func<long, long, long> countWaysToWin = (raceTime, recordDistance) =>
+long CountWaysToWin(long raceTime, long recordDistance)
 {
   long chargingTime = 0;
   long possibleWaysToWin = 0;
@@ -26,10 +33,3 @@ Func<long, long, long> countWaysToWin = (raceTime, recordDistance) =>
 
   return possibleWaysToWin;
 };
-
-long raceTime = getTime(input[0]);
-long raceRecord = getTime(input[1]);
-
-long waysToWin = countWaysToWin(raceTime, raceRecord);
-
-Console.WriteLine($"The number of ways to win is {waysToWin}");

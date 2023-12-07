@@ -10,21 +10,25 @@ if(!File.Exists(inputFilePath)) {
 
 string[] input = File.ReadAllLines(inputFilePath);
 
-Func<char, int> toInt = c => c - '0';
-
-Func<char, bool> isDigit = c => {
-  int asInt = toInt(c);
-  return asInt >= 0 && asInt <= 9;
-};
-
 int sum = input.Sum(s => {
-  char firstDigit = s.FirstOrDefault(isDigit, '0');
-  char lastDigit = s.LastOrDefault(isDigit, '0');
+  char firstDigit = s.FirstOrDefault(IsDigit, '0');
+  char lastDigit = s.LastOrDefault(IsDigit, '0');
 
-  int firstInt = toInt(firstDigit) * 10;
-  int lastInt = toInt(lastDigit);
+  int firstInt = ToInt(firstDigit) * 10;
+  int lastInt = ToInt(lastDigit);
 
   return firstInt + lastInt;
 });
 
 Console.WriteLine($"The sum of all of the calibration values in the document is {sum}");
+
+bool IsDigit(char c) 
+{
+  int asInt = ToInt(c);
+  return asInt >= 0 && asInt <= 9;
+};
+
+int ToInt(char c)
+{
+  return c - '0';
+}

@@ -17,13 +17,6 @@ Regex gameNumberRegex = new Regex(gameNumberPattern);
 string colorWithCountPattern = "(\\d+)\\s(red|green|blue)";
 Regex colorWithCountRegex = new Regex(colorWithCountPattern);
 
-Func<Match, (int Count, string Color)> getCountAndColor = m => {
-  int Count = int.Parse(m.Groups[1].Captures[0].Value);
-  string Color = m.Groups[2].Captures[0].Value;
-
-  return (Count, Color);
-};
-
 Dictionary<string, int> maximumColorCounts = new Dictionary<string, int>()
 {
   { "red", 12 },
@@ -43,7 +36,7 @@ foreach(string game in games)
 
   foreach (Match colorCount in colorCounts)
   {
-    var (Count, Color) = getCountAndColor(colorCount);
+    var (Count, Color) = GetCountAndColor(colorCount);
     if(Count > maximumColorCounts[Color])
     {
       possible = false;
@@ -60,3 +53,11 @@ foreach(string game in games)
 }
 
 Console.WriteLine($"The sum of the IDs of all possible games is: {possibleGameIDsSum}");
+
+(int Count, string Color) GetCountAndColor(Match m) 
+{
+  int Count = int.Parse(m.Groups[1].Captures[0].Value);
+  string Color = m.Groups[2].Captures[0].Value;
+
+  return (Count, Color);
+};

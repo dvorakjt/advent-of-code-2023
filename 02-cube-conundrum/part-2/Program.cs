@@ -14,13 +14,6 @@ string[] games = File.ReadAllLines(inputFilePath);
 string colorWithCountPattern = "(\\d+)\\s(red|green|blue)";
 Regex colorWithCountRegex = new Regex(colorWithCountPattern);
 
-Func<Match, (int Count, string Color)> getCountAndColor = m => {
-  int Count = int.Parse(m.Groups[1].Captures[0].Value);
-  string Color = m.Groups[2].Captures[0].Value;
-
-  return (Count, Color);
-};
-
 int cubeSetPowerSum = 0;
 
 foreach(string game in games)
@@ -38,7 +31,7 @@ foreach(string game in games)
 
   foreach (Match colorCount in colorCounts)
   {
-    var (Count, Color) = getCountAndColor(colorCount);
+    var (Count, Color) = GetCountAndColor(colorCount);
     if(Count > minimumColorCounts[Color])
     {
       minimumColorCounts[Color] = Count;
@@ -51,3 +44,11 @@ foreach(string game in games)
 }
 
 Console.WriteLine($"The sum of all minimum cube set powers is: {cubeSetPowerSum}");
+
+(int Count, string Color) GetCountAndColor(Match m) 
+{
+  int Count = int.Parse(m.Groups[1].Captures[0].Value);
+  string Color = m.Groups[2].Captures[0].Value;
+
+  return (Count, Color);
+};
