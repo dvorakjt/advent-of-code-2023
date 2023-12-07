@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-
 struct Hand : IComparable<Hand>
 {
   private const int Size = 5;
