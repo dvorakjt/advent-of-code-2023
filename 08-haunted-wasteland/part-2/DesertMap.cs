@@ -33,15 +33,8 @@ class DesertMap
 
     await Task.WhenAll(tasks);
 
-    bool allArrived = AllArrived(navigators);
-
     long totalSteps = LeastCommonMultiple.LCM(navigators.Select(n => n.Steps));
 
     return totalSteps;
-  }
-
-  private bool AllArrived(List<Navigator> navigators)
-  {
-    return navigators.All(n => n.Steps == navigators[0].Steps);
   }
 }
