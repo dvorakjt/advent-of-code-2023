@@ -10,9 +10,9 @@ class ScratchCard {
   {
     string[] revealedNumbers = card.Split(':')[1].Split('|');
 
-    HashSet<string> winningNumbers = new(revealedNumbers[0].Split(' ').Where(num => !string.IsNullOrWhiteSpace(num)));
+    HashSet<string> winningNumbers = new(revealedNumbers[0].Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
-    HashSet<string> yourNumbers = new(revealedNumbers[1].Split(' ').Where(num => !string.IsNullOrWhiteSpace(num)));
+    HashSet<string> yourNumbers = new(revealedNumbers[1].Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
     winningNumbers.IntersectWith(yourNumbers);
 

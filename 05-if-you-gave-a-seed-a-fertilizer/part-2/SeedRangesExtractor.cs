@@ -5,7 +5,7 @@ class SeedRangesExtractor
 
   public SeedRangesExtractor(string input)
   {
-    List<string> values = new(input.Substring(SEEDS_MARKER.Length, input.IndexOf('\n') - SEEDS_MARKER.Length).Split(' ').Where(s => !string.IsNullOrEmpty(s)));
+    List<string> values = new(input.Substring(SEEDS_MARKER.Length, input.IndexOf('\n') - SEEDS_MARKER.Length).Split(' ', StringSplitOptions.RemoveEmptyEntries));
   
     for(int i = 0; i < values.Count; i += 2)
     {

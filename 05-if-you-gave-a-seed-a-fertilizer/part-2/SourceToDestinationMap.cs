@@ -3,11 +3,11 @@ class SourceToDestinationMap {
 
   public SourceToDestinationMap(string map)
   {
-    List<string> mappings = new(map.Split('\n').Where(s => !string.IsNullOrWhiteSpace(s)));
+    List<string> mappings = new(map.Split('\n', StringSplitOptions.RemoveEmptyEntries));
     
     foreach(string mapping in mappings)
     {
-      List<string> rangeInfo = new(mapping.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)));
+      List<string> rangeInfo = new(mapping.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
       long destinationRangeStart = long.Parse(rangeInfo[0]);
       long sourceRangeStart = long.Parse(rangeInfo[1]);
