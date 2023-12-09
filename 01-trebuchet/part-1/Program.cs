@@ -1,11 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-
-string inputFilePath = "./input.txt";
+﻿string inputFilePath = "./input.txt";
 
 if(!File.Exists(inputFilePath)) {
-  throw new FileNotFoundException("Input file input.txt not found");
+  throw new FileNotFoundException("Input file 'input.txt' not found in current directory. Please retrieve your input file from https://adventofcode.com/2023/day/1");
 }
 
 string[] input = File.ReadAllLines(inputFilePath);

@@ -6,7 +6,7 @@ string inputFilePath = "./input.txt";
 
 if (!File.Exists(inputFilePath))
 {
-  throw new FileNotFoundException("Input file input.txt not found in the current directory.");
+  throw new FileNotFoundException("Input file 'input.txt' not found in current directory. Please retrieve your input file from https://adventofcode.com/2023/day/2");
 }
 
 string[] games = File.ReadAllLines(inputFilePath);
