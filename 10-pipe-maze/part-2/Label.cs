@@ -1,0 +1,5 @@
+enum Label
+{
+  PIPE,
+  INNER
+}
