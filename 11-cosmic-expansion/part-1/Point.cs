@@ -1,10 +1,10 @@
 struct Point {
-  public int X { get; private set; }
-  public int Y { get; private set; }
+  public int Row { get; private set; }
+  public int Column { get; private set; }
 
-  public Point(int x, int y)
+  public Point(int row, int column)
   {
-    X = x;
-    Y = y;
+    Row = row;
+    Column = column;
   }
 }

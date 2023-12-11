@@ -120,5 +120,5 @@ int SumDistancesBetweenGalaxies(List<Point> galaxyLocations)
 
 int ManhattanDistance(Point a, Point b)
 {
-  return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
+  return Math.Abs(a.Row - b.Row) + Math.Abs(a.Column - b.Column);
 }

@@ -5,104 +5,143 @@ if(!File.Exists(inputFilePath))
   throw new FileNotFoundException("Input file 'input.txt' not found in current directory. Please retrieve your input file from https://adventofcode.com/2023/day/11");
 }
 
-string[] starChart = File.ReadAllLines(inputFilePath);
+string[] input = File.ReadAllLines(inputFilePath);
 
-for(int i = 0; i < starChart.Length; i++)
+for(int i = 0; i < input.Length; i++)
 {
-  starChart[i] = starChart[i].Trim();
+  input[i] = input[i].Trim();
 }
 
-List<int> rowsToExpand = new();
-List<int> columnsToExpand = new();
+List<int> emptyRows = LocateEmptyRows(input);
+List<int> emptyColumns = LocateEmptyColumns(input);
+List<Point> galaxyLocations = LocateGalaxies(input);
+List<Point> expandedGalaxyLocations = ExpandGalaxyLocations(galaxyLocations, emptyRows, emptyColumns, 1000000);
 
-for(int i = 0; i < starChart.Length; i++)
+long galaxyDistancesSum = SumDistancesBetweenGalaxies(expandedGalaxyLocations);
+Console.WriteLine($"The sum of the shortest distances between all pairs of galaxies is {galaxyDistancesSum}");
+
+List<int> LocateEmptyRows(string[] input)
 {
-  bool isEmptyRow = true;
-  
-  for(int j = 0; j < starChart[i].Length; j++)
+  List<int> emptyRows = new();
+
+  for(int i = 0; i < input.Length; i++)
   {
-    if(starChart[i][j] == '#') {
-      isEmptyRow = false;
-      break;
-    }
-  }
-
-  if(isEmptyRow) rowsToExpand.Add(i);
-}
-
-for(int i = 0; i < starChart[0].Length; i++)
-{
-  bool isEmptyColumn = true;
-  
-  for(int j = 0; j < starChart.Length; j++)
-  {
-    if(starChart[j][i] == '#'){
-      isEmptyColumn = false;
-      break;
-    } 
-  }
-
-  if(isEmptyColumn) columnsToExpand.Add(i);
-}
-
-
-List<Point> galaxies = new();
-
-for(int i = 0; i < starChart.Length; i++)
-{
-  for(int j = 0; j < starChart[i].Length; j++)
-  {
-    if(starChart[i][j] == '#') 
+    bool isEmptyRow = true;
+    
+    for(int j = 0; j < input[i].Length; j++)
     {
-      Point galaxyLocation = new Point(i, j);
-      galaxies.Add(galaxyLocation);
+      if(input[i][j] == '#') {
+        isEmptyRow = false;
+        break;
+      }
     }
+
+    if(isEmptyRow) emptyRows.Add(i);
   }
+
+  return emptyRows;
 }
 
-List<Point> modifiedGalaxies = new(galaxies);
-
-long galaxiesDistanceSum = 0;
-
-foreach(var rowToExpand in rowsToExpand)
+List<int> LocateEmptyColumns(string[] input)
 {
-  for(int i = 0; i < galaxies.Count; i++)
+  List<int> emptyColumns = new();
+
+  for(int i = 0; i < input[0].Length; i++)
   {
-    if(galaxies[i].Row > rowToExpand)
+    bool isEmptyColumn = true;
+    
+    for(int j = 0; j < input.Length; j++)
     {
-      modifiedGalaxies[i] = new Point(modifiedGalaxies[i].Row + 1000000 - 1, modifiedGalaxies[i].Column);
+      if(input[j][i] == '#'){
+        isEmptyColumn = false;
+        break;
+      } 
     }
+
+    if(isEmptyColumn) emptyColumns.Add(i);
   }
+
+  return emptyColumns;
 }
 
-foreach(var colToExpand in columnsToExpand)
+List<Point> LocateGalaxies(string[] input)
 {
-  for(int i = 0; i < galaxies.Count; i++)
+  List<Point> galaxyLocations = new();
+
+  for(int i = 0; i < input.Length; i++)
   {
-    if(galaxies[i].Column > colToExpand)
+    for(int j = 0; j < input[i].Length; j++)
     {
-      modifiedGalaxies[i] = new Point(modifiedGalaxies[i].Row, modifiedGalaxies[i].Column + 1000000 - 1);
+      if(input[i][j] == '#') 
+      {
+        Point galaxyLocation = new Point(i, j);
+        galaxyLocations.Add(galaxyLocation);
+      }
     }
   }
+
+  return galaxyLocations;
 }
 
-for(int i = 0; i < modifiedGalaxies.Count - 1; i++)
+List<Point> ExpandGalaxyLocations(List<Point> galaxyLocations, List<int> emptyRows, List<int> emptyColumns, int expansionFactor)
 {
-  Point galaxy = modifiedGalaxies[i];
+  List<Point> expandedGalaxyLocations = new(galaxyLocations);
 
-  for(int j = i + 1; j < modifiedGalaxies.Count; j++)
+  foreach(int row in emptyRows)
   {
-    Point otherGalaxy = modifiedGalaxies[j];
-
-    int distance = ManhattanDistance(galaxy, otherGalaxy);
-
-    galaxiesDistanceSum += distance;
+    for(int i = 0; i < galaxyLocations.Count; i++)
+    {
+      if(galaxyLocations[i].Row > row)
+      {
+        expandedGalaxyLocations[i] = 
+          new Point(
+            expandedGalaxyLocations[i].Row + expansionFactor - 1, 
+            expandedGalaxyLocations[i].Column
+          );
+      }
+    }
   }
+
+  foreach(int column in emptyColumns)
+  {
+    for(int i = 0; i < galaxyLocations.Count; i++)
+    {
+      if(galaxyLocations[i].Column > column)
+      {
+        expandedGalaxyLocations[i] = 
+          new Point(
+            expandedGalaxyLocations[i].Row, 
+            expandedGalaxyLocations[i].Column + expansionFactor - 1
+          );
+      }
+    }
+  }
+
+  return expandedGalaxyLocations;
+}
+
+long SumDistancesBetweenGalaxies(List<Point> galaxyLocations)
+{
+  long sum = 0;
+
+  for(int i = 0; i < galaxyLocations.Count - 1; i++)
+  {
+    Point galaxy = galaxyLocations[i];
+
+    for(int j = i + 1; j < galaxyLocations.Count; j++)
+    {
+      Point otherGalaxy = galaxyLocations[j];
+
+      int distance = ManhattanDistance(galaxy, otherGalaxy);
+
+      sum += distance;
+    }
+  }
+
+  return sum;
 }
 
 int ManhattanDistance(Point a, Point b)
 {
   return Math.Abs(a.Row - b.Row) + Math.Abs(a.Column - b.Column);
 }
-
-Console.WriteLine(galaxiesDistanceSum);
