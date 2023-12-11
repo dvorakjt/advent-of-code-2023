@@ -2,16 +2,21 @@ class LabeledMatrix
 {
   private LabeledMatrixPoint[,] Matrix;
   private List<Point> Path;
+  private List<Point> InnerPerimeterPoints = new();
+  private string[] OriginalInput;
   public int InnerPointCount { get; private set; } = 0;
 
-  public LabeledMatrix(int height, int width, List<Point> path)
+  public LabeledMatrix(int height, int width, List<Point> path, string[] originalInput)
   {
     Matrix = new LabeledMatrixPoint[height, width];
-    
+    OriginalInput = originalInput;
+
     Path = path;
 
     LabelPipes();
-    CountAndLabelInnerPoints();
+    FindAndLabelInnerPerimeterPoints();
+    FloodFillFromInnerPerimeterPoints();
+    CountInnerPoints();
   }
 
   private void LabelPipes()
@@ -23,7 +28,7 @@ class LabeledMatrix
     }
   }
 
-  private void CountAndLabelInnerPoints()
+  private void FindAndLabelInnerPerimeterPoints()
   {
     LabeledMatrixPoint startingPoint = GetStartingPoint();
 
@@ -35,14 +40,10 @@ class LabeledMatrix
 
     int startingPointIndex = (int)startingPoint.PathIndex;
     int currentPointIndex = startingPointIndex;
-    Direction outerBoundaryDirection = Direction.E;
-
-    
+    Direction innerBoundaryDirection = Direction.E;
 
     do {
-      Console.WriteLine(outerBoundaryDirection);
-      Console.WriteLine(Path[currentPointIndex].Row + ", " + Path[currentPointIndex].Column);
-      TravelToNextPipeAndLabelInnerPoints(ref currentPointIndex, ref outerBoundaryDirection);
+      TravelToNextPipeAndLabelInnerPoints(ref currentPointIndex, ref innerBoundaryDirection);
     } while(currentPointIndex != startingPointIndex);
   }
 
@@ -59,54 +60,54 @@ class LabeledMatrix
     throw new Exception("Starting point not found");
   }
 
-  public void TravelToNextPipeAndLabelInnerPoints(ref int currentPointIndex, ref Direction outerBoundaryDirection)
+  public void TravelToNextPipeAndLabelInnerPoints(ref int currentPointIndex, ref Direction innerBoundaryDirection)
   {
     int nextPointIndex = currentPointIndex + 1;
     if(nextPointIndex >= Path.Count) nextPointIndex = 0;
 
     Direction directionToNextPoint = GetDirection(Path[currentPointIndex], Path[nextPointIndex]);
-    Direction nextOuterBoundaryDirection;
+    Direction nextInnerBoundaryDirection;
 
+    //the path continues straight
     if(directionToNextPoint == Direction.N)
     {
-      if(outerBoundaryDirection == Direction.E || outerBoundaryDirection == Direction.W)
+      if(innerBoundaryDirection == Direction.E || innerBoundaryDirection == Direction.W)
       {
-        //outerBoundaryDirection is unchanged
-        nextOuterBoundaryDirection = outerBoundaryDirection;
+        nextInnerBoundaryDirection = innerBoundaryDirection;
       }
-      else
+      else //the path turned
       {
         int previousPointIndex = currentPointIndex - 1;
         if(previousPointIndex < 0) previousPointIndex = Path.Count - 1;
 
         Direction previousDirection = GetDirection(Path[previousPointIndex], Path[currentPointIndex]);
 
-        //you encountered a turn
-        if(previousDirection == Direction.W && outerBoundaryDirection == Direction.S)
+        if(previousDirection == Direction.W && innerBoundaryDirection == Direction.N)
         {
-          nextOuterBoundaryDirection = Direction.W;
+          nextInnerBoundaryDirection = Direction.E;
         }
-        else if(previousDirection == Direction.W && outerBoundaryDirection == Direction.N)
+        else if(previousDirection == Direction.W && innerBoundaryDirection == Direction.S)
         {
-          nextOuterBoundaryDirection = Direction.E;
+          nextInnerBoundaryDirection = Direction.W;
+          SaveAndLabelInnerPoint(Path[nextPointIndex], Direction.SW);
         }
-        else if(previousDirection == Direction.E && outerBoundaryDirection == Direction.S)
+        else if(previousDirection == Direction.E && innerBoundaryDirection == Direction.N)
         {
-          nextOuterBoundaryDirection = Direction.E;
+          nextInnerBoundaryDirection = Direction.W;
         }
-        else //if(previousDirection == Direction.E && outerBoundaryDirection == Direction.N)
+        else 
         {
-          nextOuterBoundaryDirection = Direction.W;
+          nextInnerBoundaryDirection = Direction.E;
+          SaveAndLabelInnerPoint(Path[nextPointIndex], Direction.SE);
         }
       }
       
     }
     else if(directionToNextPoint == Direction.S)
     {
-      if(outerBoundaryDirection == Direction.E || outerBoundaryDirection == Direction.W)  
+      if(innerBoundaryDirection == Direction.E || innerBoundaryDirection == Direction.W)  
       {
-        //outerBoundaryDirection is unchanged
-        nextOuterBoundaryDirection = outerBoundaryDirection;
+        nextInnerBoundaryDirection = innerBoundaryDirection;
       }
       else
       {
@@ -115,31 +116,31 @@ class LabeledMatrix
 
         Direction previousDirection = GetDirection(Path[previousPointIndex], Path[currentPointIndex]);
 
-        //you encountered a turn
-        if(previousDirection == Direction.W && outerBoundaryDirection == Direction.N)
+        if(previousDirection == Direction.W && innerBoundaryDirection == Direction.S)
         {
-          nextOuterBoundaryDirection = Direction.W;
+          nextInnerBoundaryDirection = Direction.E;
         }
-        else if(previousDirection == Direction.W && outerBoundaryDirection == Direction.S)
+        else if(previousDirection == Direction.W && innerBoundaryDirection == Direction.N)
         {
-          nextOuterBoundaryDirection = Direction.E;
+          nextInnerBoundaryDirection = Direction.W;
+          SaveAndLabelInnerPoint(Path[nextPointIndex], Direction.NW);
         }
-        else if(previousDirection == Direction.E && outerBoundaryDirection == Direction.N)
+        else if(previousDirection == Direction.E && innerBoundaryDirection == Direction.S)
         {
-          nextOuterBoundaryDirection = Direction.E;
+          nextInnerBoundaryDirection = Direction.W;
         }
-        else
+        else 
         {
-          nextOuterBoundaryDirection = Direction.W;
+          nextInnerBoundaryDirection = Direction.E;
+          SaveAndLabelInnerPoint(Path[nextPointIndex], Direction.NE);
         }
       }
     }
     else if(directionToNextPoint == Direction.W)
     {
-      if(outerBoundaryDirection == Direction.N || outerBoundaryDirection == Direction.S)
+      if(innerBoundaryDirection == Direction.N || innerBoundaryDirection == Direction.S)
       {
-        //outerBoundaryDirection is unchanged
-        nextOuterBoundaryDirection = outerBoundaryDirection;
+        nextInnerBoundaryDirection = innerBoundaryDirection;
       }
       else 
       {
@@ -149,30 +150,32 @@ class LabeledMatrix
         Direction previousDirection = GetDirection(Path[previousPointIndex], Path[currentPointIndex]);
 
         //you encountered a turn
-        if(previousDirection == Direction.N && outerBoundaryDirection == Direction.E)
+        if(previousDirection == Direction.N && innerBoundaryDirection == Direction.W)
         {
-          nextOuterBoundaryDirection = Direction.N;
+          nextInnerBoundaryDirection = Direction.S;
         }
-        else if(previousDirection == Direction.N && outerBoundaryDirection == Direction.W)
+        else if(previousDirection == Direction.N && innerBoundaryDirection == Direction.E)
         {
-          nextOuterBoundaryDirection = Direction.S;
+          nextInnerBoundaryDirection = Direction.N;
+          SaveAndLabelInnerPoint(Path[nextPointIndex], Direction.NE);
         }
-        else if(previousDirection == Direction.S && outerBoundaryDirection == Direction.E)
+        else if(previousDirection == Direction.S && innerBoundaryDirection == Direction.W)
         {
-          nextOuterBoundaryDirection = Direction.S;
+          nextInnerBoundaryDirection = Direction.N;
         }
-        else
+        else 
         {
-          nextOuterBoundaryDirection = Direction.N;
+          nextInnerBoundaryDirection = Direction.S;
+          SaveAndLabelInnerPoint(Path[nextPointIndex], Direction.SE);
         }
       }
     }
     else
     {
-      if(outerBoundaryDirection == Direction.N || outerBoundaryDirection == Direction.S)
+      if(innerBoundaryDirection == Direction.N || innerBoundaryDirection == Direction.S)
       {
         //outerBoundaryDirection is unchanged
-        nextOuterBoundaryDirection = outerBoundaryDirection;
+        nextInnerBoundaryDirection = innerBoundaryDirection;
       }
       else
       {
@@ -182,55 +185,70 @@ class LabeledMatrix
         Direction previousDirection = GetDirection(Path[previousPointIndex], Path[currentPointIndex]);
 
         //you encountered a turn
-        if(previousDirection == Direction.N && outerBoundaryDirection == Direction.W)
+        if(previousDirection == Direction.N && innerBoundaryDirection == Direction.E)
         {
-          nextOuterBoundaryDirection = Direction.N;
+          nextInnerBoundaryDirection = Direction.S;
         }
-        else if(previousDirection == Direction.N && outerBoundaryDirection == Direction.E)
+        else if(previousDirection == Direction.N && innerBoundaryDirection == Direction.W)
         {
-          nextOuterBoundaryDirection = Direction.S;
+          nextInnerBoundaryDirection = Direction.N;
+          SaveAndLabelInnerPoint(Path[nextPointIndex], Direction.NW);
         }
-        else if(previousDirection == Direction.S && outerBoundaryDirection == Direction.W)
+        else if(previousDirection == Direction.S && innerBoundaryDirection == Direction.E)
         {
-          nextOuterBoundaryDirection = Direction.S;
+          nextInnerBoundaryDirection = Direction.N;
         }
-        else
+        else 
         {
-          nextOuterBoundaryDirection = Direction.N;
+          nextInnerBoundaryDirection = Direction.S;
+          SaveAndLabelInnerPoint(Path[nextPointIndex], Direction.SW);
         }
       }
     }
 
-    LabelInnerPoint(Path[nextPointIndex], nextOuterBoundaryDirection);
+    SaveAndLabelInnerPoint(Path[nextPointIndex], nextInnerBoundaryDirection);
 
     currentPointIndex = nextPointIndex;
-    outerBoundaryDirection = nextOuterBoundaryDirection;
+    innerBoundaryDirection = nextInnerBoundaryDirection;
   }
 
-  private void LabelInnerPoint(Point p, Direction outerBoundaryDirection)
+  //have to update this to be able to save and label points NE, NW, SE, SW
+  private void SaveAndLabelInnerPoint(Point p, Direction direction)
   {
     Point innerPoint;
 
-    switch(outerBoundaryDirection)
+    switch(direction)
     {
       case Direction.N :
-        innerPoint = new Point(p.Row + 1, p.Column);
-        break;
-      case Direction.S :
         innerPoint = new Point(p.Row - 1, p.Column);
         break;
+      case Direction.S :
+        innerPoint = new Point(p.Row + 1, p.Column);
+        break;
       case Direction.E :
+        innerPoint = new Point(p.Row, p.Column + 1);
+        break;
+      case Direction.W : 
         innerPoint = new Point(p.Row, p.Column - 1);
         break;
+      case Direction.NE :
+        innerPoint = new Point(p.Row - 1, p.Column + 1);
+        break;
+      case Direction.NW :
+        innerPoint = new Point(p.Row - 1, p.Column - 1);
+        break;
+      case Direction.SE :
+        innerPoint = new Point(p.Row + 1, p.Column + 1);
+        break;
       default:
-        innerPoint = new Point(p.Row, p.Column + 1);
+        innerPoint = new Point(p.Row + 1, p.Column - 1);
         break;
     }
 
     if(Matrix[innerPoint.Row, innerPoint.Column] == null)
     {
       Matrix[innerPoint.Row, innerPoint.Column] = new LabeledMatrixPoint(Label.INNER);
-      InnerPointCount++;
+      InnerPerimeterPoints.Add(innerPoint);
     }
   }
 
@@ -253,6 +271,54 @@ class LabeledMatrix
     }
   }
 
+  private void FloodFillFromInnerPerimeterPoints()
+  {
+    foreach(Point p in InnerPerimeterPoints)
+    {
+      FloodFillFromInnerPerimeterPoint(p);
+    }
+  }
+
+  private void FloodFillFromInnerPerimeterPoint(Point p)
+  {
+    FloodFillFromInnerPerimeterPoint(p, new HashSet<Point>());
+  }
+
+  private void FloodFillFromInnerPerimeterPoint(Point p, HashSet<Point> seenPoints)
+  {
+    if(seenPoints.Contains(p)) return;
+
+    if(
+      p.Row < 0 || 
+      p.Column < 0 ||
+      p.Row >= Matrix.GetLength(0) ||
+      p.Column >= Matrix.GetLength(1) ||
+      (Matrix[p.Row, p.Column] != null && Matrix[p.Row, p.Column].Label == Label.PIPE)
+    )
+    {
+      return;
+    }
+
+    Matrix[p.Row, p.Column] = new LabeledMatrixPoint(Label.INNER);
+    seenPoints.Add(p);
+
+    FloodFillFromInnerPerimeterPoint(new Point(p.Row - 1, p.Column), seenPoints);
+    FloodFillFromInnerPerimeterPoint(new Point(p.Row + 1, p.Column), seenPoints);
+    FloodFillFromInnerPerimeterPoint(new Point(p.Row, p.Column - 1), seenPoints);
+    FloodFillFromInnerPerimeterPoint(new Point(p.Row, p.Column + 1), seenPoints);
+  }
+
+  private void CountInnerPoints()
+  {
+    for(int i = 0; i < Matrix.GetLength(0); i++)
+    {
+      for(int j = 0; j < Matrix.GetLength(1); j++)
+      {
+        if(Matrix[i,j] != null && Matrix[i,j].Label == Label.INNER) InnerPointCount++;
+      }
+    }
+  }
+
   public void Save()
   {
     string[] lines = new string[Matrix.GetLength(0)];
@@ -263,7 +329,7 @@ class LabeledMatrix
 
       for(int j = 0; j < Matrix.GetLength(1); j++)
       {
-        lines[i] += Matrix[i,j] == null ? "_" : Matrix[i,j].Label == Label.PIPE ? "P" : "I";
+        lines[i] += Matrix[i,j] == null ? "_" : Matrix[i,j].Label == Label.PIPE ? OriginalInput[i][j] : "I";
       }
     }
 

@@ -1,6 +1,10 @@
 enum Direction {
-  N = 'N',
-  S = 'S',
-  E = 'E',
-  W = 'W'
+  N,
+  S,
+  E,
+  W,
+  NE,
+  NW,
+  SE,
+  SW
 }
