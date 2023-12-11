@@ -8,9 +8,7 @@ if(!File.Exists(inputFilePath))
 string[] input = File.ReadAllLines(inputFilePath);
 
 Maze maze = InputParser.CreateMazeFromInput(input);
-maze.FindLoop();
-LabeledMatrix labeledMatrix = new LabeledMatrix(input.Length, input[0].Length, maze.LoopPath, input);
+List<Point> loopPath = maze.FindLoopPath();
+LabeledMatrix labeledMatrix = new LabeledMatrix(maze.Height, maze.Width, loopPath);
 
-Console.WriteLine(labeledMatrix.InnerPointCount);
-
-labeledMatrix.Save();
+Console.WriteLine($"The total area enclosed by the loop is: {labeledMatrix.InnerPointCount}");

@@ -3,13 +3,11 @@ class LabeledMatrix
   private LabeledMatrixPoint[,] Matrix;
   private List<Point> Path;
   private List<Point> InnerPerimeterPoints = new();
-  private string[] OriginalInput;
   public int InnerPointCount { get; private set; } = 0;
 
-  public LabeledMatrix(int height, int width, List<Point> path, string[] originalInput)
+  public LabeledMatrix(int height, int width, List<Point> path)
   {
     Matrix = new LabeledMatrixPoint[height, width];
-    OriginalInput = originalInput;
 
     Path = path;
 
@@ -35,7 +33,7 @@ class LabeledMatrix
 
     if(startingPoint.PathIndex == null)
     {
-      throw new Exception("Starting point PathIndex must not be null.");
+      throw new PointNotFoundOrInvalidException("startingPoint.PathIndex must not be null.");
     }
 
     int startingPointIndex = (int)startingPoint.PathIndex;
@@ -57,7 +55,7 @@ class LabeledMatrix
       }
     }
 
-    throw new Exception("Starting point not found");
+    throw new PointNotFoundOrInvalidException("Starting point not found.");
   }
 
   public void TravelToNextPipeAndLabelInnerPoints(ref int currentPointIndex, ref Direction innerBoundaryDirection)
@@ -65,7 +63,11 @@ class LabeledMatrix
     int nextPointIndex = currentPointIndex + 1;
     if(nextPointIndex >= Path.Count) nextPointIndex = 0;
 
-    Direction directionToNextPoint = GetDirection(Path[currentPointIndex], Path[nextPointIndex]);
+    Direction directionToNextPoint = 
+      GetDirectionFromOriginToDestination(
+        origin: Path[currentPointIndex], 
+        destination: Path[nextPointIndex]
+      );
     Direction nextInnerBoundaryDirection;
 
     //the path continues straight
@@ -80,7 +82,11 @@ class LabeledMatrix
         int previousPointIndex = currentPointIndex - 1;
         if(previousPointIndex < 0) previousPointIndex = Path.Count - 1;
 
-        Direction previousDirection = GetDirection(Path[previousPointIndex], Path[currentPointIndex]);
+        Direction previousDirection = 
+          GetDirectionFromOriginToDestination(
+            origin: Path[previousPointIndex], 
+            destination: Path[currentPointIndex]
+          );
 
         if(previousDirection == Direction.W && innerBoundaryDirection == Direction.N)
         {
@@ -114,7 +120,11 @@ class LabeledMatrix
         int previousPointIndex = currentPointIndex - 1;
         if(previousPointIndex < 0) previousPointIndex = Path.Count - 1;
 
-        Direction previousDirection = GetDirection(Path[previousPointIndex], Path[currentPointIndex]);
+        Direction previousDirection = 
+          GetDirectionFromOriginToDestination(
+            origin: Path[previousPointIndex], 
+            destination: Path[currentPointIndex]
+          );
 
         if(previousDirection == Direction.W && innerBoundaryDirection == Direction.S)
         {
@@ -147,9 +157,12 @@ class LabeledMatrix
         int previousPointIndex = currentPointIndex - 1;
         if(previousPointIndex < 0) previousPointIndex = Path.Count - 1;
 
-        Direction previousDirection = GetDirection(Path[previousPointIndex], Path[currentPointIndex]);
+        Direction previousDirection =
+          GetDirectionFromOriginToDestination(
+            origin: Path[previousPointIndex], 
+            destination: Path[currentPointIndex]
+          );
 
-        //you encountered a turn
         if(previousDirection == Direction.N && innerBoundaryDirection == Direction.W)
         {
           nextInnerBoundaryDirection = Direction.S;
@@ -174,7 +187,6 @@ class LabeledMatrix
     {
       if(innerBoundaryDirection == Direction.N || innerBoundaryDirection == Direction.S)
       {
-        //outerBoundaryDirection is unchanged
         nextInnerBoundaryDirection = innerBoundaryDirection;
       }
       else
@@ -182,9 +194,12 @@ class LabeledMatrix
         int previousPointIndex = currentPointIndex - 1;
         if(previousPointIndex < 0) previousPointIndex = Path.Count - 1;
 
-        Direction previousDirection = GetDirection(Path[previousPointIndex], Path[currentPointIndex]);
+        Direction previousDirection = 
+          GetDirectionFromOriginToDestination(
+            origin: Path[previousPointIndex], 
+            destination: Path[currentPointIndex]
+          );
 
-        //you encountered a turn
         if(previousDirection == Direction.N && innerBoundaryDirection == Direction.E)
         {
           nextInnerBoundaryDirection = Direction.S;
@@ -212,7 +227,6 @@ class LabeledMatrix
     innerBoundaryDirection = nextInnerBoundaryDirection;
   }
 
-  //have to update this to be able to save and label points NE, NW, SE, SW
   private void SaveAndLabelInnerPoint(Point p, Direction direction)
   {
     Point innerPoint;
@@ -252,7 +266,7 @@ class LabeledMatrix
     }
   }
 
-  private Direction GetDirection(Point origin, Point destination)
+  private Direction GetDirectionFromOriginToDestination(Point origin, Point destination)
   {
     if(destination.Row < origin.Row)
     {
@@ -317,22 +331,5 @@ class LabeledMatrix
         if(Matrix[i,j] != null && Matrix[i,j].Label == Label.INNER) InnerPointCount++;
       }
     }
-  }
-
-  public void Save()
-  {
-    string[] lines = new string[Matrix.GetLength(0)];
-
-    for(int i = 0; i < Matrix.GetLength(0); i++)
-    {
-      lines[i] = "";
-
-      for(int j = 0; j < Matrix.GetLength(1); j++)
-      {
-        lines[i] += Matrix[i,j] == null ? "_" : Matrix[i,j].Label == Label.PIPE ? OriginalInput[i][j] : "I";
-      }
-    }
-
-    File.WriteAllLines("output.txt", lines);
   }
 }

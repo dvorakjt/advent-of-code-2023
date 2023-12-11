@@ -31,7 +31,7 @@ static class InputParser
 
     if(startingPoint.Row == -1 || startingPoint.Column == -1)
     {
-      throw new InvalidDataException("Could not find a starting point within the maze.");
+      throw new PointNotFoundOrInvalidException("Starting point (labeled with char 'S') not found in input.");
     }
 
     return new Maze(tiles, startingPoint);

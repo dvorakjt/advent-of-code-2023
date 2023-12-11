@@ -10,7 +10,7 @@ class Maze
     StartingPoint = startingPoint;
   }
 
-  public long FindFurthestPoint()
+  public int FindFurthestPoint()
   {
     MazeRunner north = new MazeRunner(StartingPoint.Row, StartingPoint.Column, Direction.N);
     MazeRunner south = new MazeRunner(StartingPoint.Row, StartingPoint.Column, Direction.S);
@@ -38,7 +38,7 @@ class Maze
   private class MazeRunner
   {
     public Direction NextDirection;
-    public long StepsTaken { get; private set; } = 0;
+    public int StepsTaken { get; private set; } = 0;
     public int Row { get; private set; }
     public int Column { get; private set; }
 

@@ -8,6 +8,6 @@ if(!File.Exists(inputFilePath))
 string[] input = File.ReadAllLines(inputFilePath);
 
 Maze maze = InputParser.CreateMazeFromInput(input);
-long furthestPoint = maze.FindFurthestPoint();
+int furthestPoint = maze.FindFurthestPoint();
 
-Console.WriteLine(furthestPoint);
+Console.WriteLine($"The furthest point along the loop from the start is {furthestPoint}");

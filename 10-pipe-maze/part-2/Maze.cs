@@ -3,18 +3,35 @@ class Maze
   private Tile[,] Tiles;
   private Point StartingPoint;
   private List<MazeRunner> MazeRunners = new();
+  public int Height 
+  {
+    get 
+    {
+      return Tiles.GetLength(0);
+    }
+  }
 
-  public List<Point> LoopPath = new();
+  public int Width {
+    get 
+    {
+      return Tiles.GetLength(1);
+    }
+  }
+
 
   public Maze(Tile[,] tiles, Point startingPoint)
   {
     Tiles = tiles;
     StartingPoint = startingPoint;
-    LoopPath.Add(StartingPoint);
   }
 
-  public void FindLoop()
+  public List<Point> FindLoopPath()
   {
+    List<Point> loopPath = new()
+    {
+      StartingPoint
+    };
+
     MazeRunner north = new MazeRunner(StartingPoint, Direction.N);
     MazeRunner south = new MazeRunner(StartingPoint, Direction.S);
     MazeRunner east = new MazeRunner(StartingPoint, Direction.E);
@@ -31,8 +48,8 @@ class Maze
           bool loopFound = mazeRunner.MoveAndCheckIfLoopFound(this);
           if(loopFound)
           {
-            LoopPath.AddRange(mazeRunner.Path);
-            return;
+            loopPath.AddRange(mazeRunner.Path);
+            return loopPath;
           }
         }
       }
