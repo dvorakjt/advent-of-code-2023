@@ -1,99 +1,114 @@
-﻿
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-string input = File.ReadAllText("input.txt");
+string inputFilePath = "input.txt";
 
+if(!File.Exists(inputFilePath))
+{
+  throw new FileNotFoundException
+  (
+    "Input file 'input.txt' not found in current directory. Please retrieve your input file from https://adventofcode.com/2023/day/13"
+  );
+}
+
+string input = File.ReadAllText(inputFilePath);
 MatchCollection matches = Regex.Matches(input, @"([#.]+\n)+");
-
-long sum = 0;
+int sum = 0;
 
 foreach(Match match in matches)
 {
-  string[] split = match.Value.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-  for(int i = 0; i < split.Length; i++)
+  char [,] matrix = GetMatrixFromMatch(match);
+
+  sum += FindColumnsLeftOfLineOfReflectionWithDefect(matrix);
+  sum += FindColumnsAboveLineOfReflectionWithDefect(matrix) * 100;
+}
+
+Console.WriteLine
+(
+  "With exactly one defect allowed:\n" +
+  "The sum of all columns above vertical lines of reflection + \n" + 
+  $"The sum of all rows above horizontal lines of reflection * 100 =\n{sum}"
+);
+
+char[,] GetMatrixFromMatch(Match match)
+{
+  string[] rows = match.Value.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+  for(int i = 0; i < rows.Length; i++)
   {
-    split[i] = split[i].Trim();
+    rows[i] = rows[i].Trim();
   }
   
-  char[,] matrix = new char[split.Length, split[0].Length];
+  char[,] matrix = new char[rows.Length, rows[0].Length];
 
-  for(int i = 0; i < split.Length; i++)
+  for(int i = 0; i < rows.Length; i++)
   {
-    for(int j = 0; j < split[0].Length; j++)
+    for(int j = 0; j < rows[0].Length; j++)
     {
-      matrix[i,j] = split[i][j];
+      matrix[i,j] = rows[i][j];
     }
+  } 
+
+  return matrix;
+}
+
+int FindColumnsLeftOfLineOfReflectionWithDefect(char[,] matrix)
+{
+  (int LeftColumn, int RightColumn) lineOfReflection = (0, 1);
+  int columnsToLeft = 0;
+
+  for( ; lineOfReflection.RightColumn < matrix.GetLength(1); lineOfReflection.LeftColumn++, lineOfReflection.RightColumn++)
+  {
+    int defects = 0;
+
+    for
+    (
+      int leftmostColumn = lineOfReflection.LeftColumn, rightmostColumn = lineOfReflection.RightColumn; 
+      leftmostColumn >= 0 && rightmostColumn < matrix.GetLength(1); 
+      leftmostColumn--, rightmostColumn++
+    )
+    {
+      for(int row = 0; row < matrix.GetLength(0); row++)
+      {
+        if(matrix[row, leftmostColumn] != matrix[row, rightmostColumn])
+        {
+          if(++defects > 1) break;
+        }
+      }
+    } 
+
+    if(defects == 1) columnsToLeft = lineOfReflection.RightColumn;
   }
 
-  int columnsToLeft = 0;
+  return columnsToLeft;
+}
+
+int FindColumnsAboveLineOfReflectionWithDefect(char[,] matrix)
+{
+  (int TopRow, int BottomRow) lineOfReflection = (0, 1);
   int columnsAbove = 0;
 
-  if(TryFindVerticalLineOfSymmetryWithSmudge(matrix, out columnsToLeft))
+  for( ; lineOfReflection.BottomRow < matrix.GetLength(0); lineOfReflection.TopRow++, lineOfReflection.BottomRow++)
   {
-    sum += columnsToLeft;
-  }
-  if(TryFindHorizontalLineOfSymmetryWithSmudge(matrix, out columnsAbove))
-  {
-    sum += columnsAbove * 100;
-  }
-}
+    int defects = 0;
 
-Console.WriteLine(sum);
-
-bool TryFindVerticalLineOfSymmetryWithSmudge(char[,] matrix, out int columnsToLeft)
-{
-  int centerColumnLeft = 0;
-  int centerColumnRight = 1;
-  int c2L = 0;
-
-  for( ; centerColumnRight < matrix.GetLength(1); centerColumnLeft++, centerColumnRight++)
-  {
-    int differencesDetected = 0;
-
-    for(int left = centerColumnLeft, right = centerColumnRight; left >= 0 && right < matrix.GetLength(1); left--, right++)
+    for
+    (
+      int topmostRow = lineOfReflection.TopRow, bottommostRow = lineOfReflection.BottomRow; 
+      topmostRow >= 0 && bottommostRow < matrix.GetLength(0); 
+      topmostRow--, bottommostRow++
+    )
     {
-      for(int i = 0; i < matrix.GetLength(0); i++)
+      for(int column = 0; column < matrix.GetLength(1); column++)
       {
-        if(matrix[i,left] != matrix[i,right])
+        if(matrix[topmostRow, column] != matrix[bottommostRow, column])
         {
-          differencesDetected++;
+          if(++defects > 1) break;
         }
       }
     } 
 
-    if(differencesDetected == 1) c2L = centerColumnLeft + 1;
+    if(defects == 1) columnsAbove = lineOfReflection.BottomRow;
   }
 
-  columnsToLeft = c2L;
 
-  return columnsToLeft > 0;
-}
-
-bool TryFindHorizontalLineOfSymmetryWithSmudge(char[,] matrix, out int columnsAbove)
-{
-  int centerRowTop = 0;
-  int centerRowBottom = 1;
-  int cAbove = 0;
-
-  for( ; centerRowBottom < matrix.GetLength(0); centerRowTop++, centerRowBottom++)
-  {
-    int differencesDetected = 0;
-
-    for(int top = centerRowTop, bottom = centerRowBottom; top >= 0 && bottom < matrix.GetLength(0); top--, bottom++)
-    {
-      for(int i = 0; i < matrix.GetLength(1); i++)
-      {
-        if(matrix[top,i] != matrix[bottom,i])
-        {
-          differencesDetected++;
-        }
-      }
-    } 
-
-    if(differencesDetected == 1) cAbove = centerRowTop + 1;
-  }
-
-  columnsAbove = cAbove;
-
-  return columnsAbove > 0;
+  return columnsAbove;
 }
