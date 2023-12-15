@@ -9,8 +9,8 @@ if(!File.Exists(inputFilePath))
 
 string[] input = File.ReadAllLines(inputFilePath);
 
-List<int> raceTimes = new(Regex.Matches(input[0], @"\d+").Select(match => int.Parse(match.Value)));
-List<int> raceRecords = new(Regex.Matches(input[1], @"\d+").Select(match => int.Parse(match.Value)));
+List<int> raceTimes = Regex.Matches(input[0], @"\d+").Select(match => int.Parse(match.Value)).ToList();
+List<int> raceRecords = Regex.Matches(input[1], @"\d+").Select(match => int.Parse(match.Value)).ToList();
 
 int marginForError = 1;
 

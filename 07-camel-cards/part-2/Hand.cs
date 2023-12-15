@@ -36,7 +36,7 @@ struct Hand : IComparable<Hand>
 
     if(jokers == 5) return HandType.FIVE_OF_A_KIND;
 
-    List<int> sortedCounts = new(cardCounts.Values.OrderByDescending(c => c));
+    List<int> sortedCounts = cardCounts.Values.OrderByDescending(c => c).ToList();
 
     //add jokers to highest count
     sortedCounts[0] += jokers;

@@ -17,7 +17,7 @@ foreach(string line in input)
 
   if(matches == null) continue;
 
-  List<long> history = new(matches.Select(m => long.Parse(m.Value)));
+  List<long> history = matches.Select(m => long.Parse(m.Value)).ToList();
 
   extrapolatedSum += ExtrapolateBackwards(history);
 }

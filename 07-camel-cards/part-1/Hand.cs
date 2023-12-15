@@ -26,7 +26,7 @@ struct Hand : IComparable<Hand>
       cardCounts[card]++;
     }
 
-    List<int> sortedCounts = new(cardCounts.Values.OrderByDescending(c => c));
+    List<int> sortedCounts = cardCounts.Values.OrderByDescending(c => c).ToList();
 
     if(sortedCounts[0] == 5) return HandType.FIVE_OF_A_KIND;
     if(sortedCounts[0] == 4) return HandType.FOUR_OF_A_KIND;
