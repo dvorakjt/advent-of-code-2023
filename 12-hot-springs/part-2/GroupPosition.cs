@@ -1,12 +1,10 @@
-class Range
+class GroupPosition
 {
     public int Start { get; private set; }
-    public int Length { get; private set; }
     public long PossibleArrangements = 0;
 
-    public Range(int start, int length)
+    public GroupPosition(int start)
     {
         Start = start;
-        Length = length;
     }
 }
