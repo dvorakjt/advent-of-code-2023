@@ -8,7 +8,7 @@ static class InputParser
     {
       string[] record = line.Trim().Split(' ');
       char[] conditionRecord = record[0].ToCharArray();
-      List<int> expectedDamagedGroups = new(record[1].Split(',').Select(g => int.Parse(g)));
+      List<int> expectedDamagedGroups = record[1].Split(',').Select(g => int.Parse(g)).ToList();
 
       IncompleteConditionRecord incompleteConditionRecord = new(conditionRecord, expectedDamagedGroups);
 

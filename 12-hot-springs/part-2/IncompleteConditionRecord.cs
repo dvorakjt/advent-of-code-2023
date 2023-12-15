@@ -1,12 +1,12 @@
-class ArrangementCounter
+class IncompleteConditionRecord
 {
   private string ConditionRecord;
   private List<string> Groups;
   private List<List<GroupPosition>> PossiblePositionsPerGroup;
 
-  public long PossibleArrangements { get; private set; }
+  public long PossibleGroupArrangementsCount { get; private set; }
 
-  public ArrangementCounter(string conditionRecord, List<int> groupCounts)
+  public IncompleteConditionRecord(string conditionRecord, List<int> groupCounts)
   {
     ConditionRecord = conditionRecord;
     Groups = TransformGroups(groupCounts);
@@ -14,7 +14,7 @@ class ArrangementCounter
     RemoveInvalidPositionsFromFirstGroupAndSetInitialCounts();
     RemoveInvalidPositionsFromLastGroup();
     DeterminePossibleArrangementCounts();
-    PossibleArrangements = SumPossibleArrangementCounts();
+    PossibleGroupArrangementsCount = SumPossibleArrangementCounts();
   }
 
   private List<string> TransformGroups(List<int> groupCounts)
