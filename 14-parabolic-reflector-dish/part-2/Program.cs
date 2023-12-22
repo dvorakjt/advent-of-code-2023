@@ -18,6 +18,8 @@ for(int i = 0; i < platform.GetLength(0); i++)
 for(int i = 0; i < 1e9; i++)
 {
   platform = PerformCycle(platform);
+  Console.Write(i);
+  Console.SetCursorPosition(0, Console.CursorTop);
 }
 
 Console.WriteLine(CalculateLoad(platform));
