@@ -1,9 +1,9 @@
-struct RowItem 
+struct RowRock 
 {
   public int Column;
   public readonly bool IsRound;
 
-  public RowItem(int column, bool isRound)
+  public RowRock(int column, bool isRound)
   {
     Column = column;
     IsRound = isRound;

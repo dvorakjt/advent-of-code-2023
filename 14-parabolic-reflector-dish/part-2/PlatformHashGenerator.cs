@@ -1,6 +1,6 @@
 using System.Text;
 
-static class MatrixHashGenerator
+static class PlatformHashGenerator
 {
   private const string BASE_100 = 
     "0123456789!\"#$%&'()*+,-./:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÿĀāĂăĄ";
@@ -8,7 +8,7 @@ static class MatrixHashGenerator
   private const char SQUARE_BLOCK = (char)('Ą' + 1);
   private const char ROUND_BLOCK = (char)('Ą' + 2);
 
-  public static string HashMatrix(List<LinkedList<ColumnItem>> columns)
+  public static string HashPlatform(List<LinkedList<ColumnRock>> columns)
   {
     List<string> columnHashes = new();
 
@@ -28,7 +28,7 @@ static class MatrixHashGenerator
       columnHashes.Add(colStringBuilder.ToString());
     }
 
-    return string.Join(' ', columnHashes);
+    return string.Join(COLUMN_SEPARATOR, columnHashes);
   }
 
   private static char HashRow(int row)

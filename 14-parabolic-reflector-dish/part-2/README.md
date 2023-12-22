@@ -1,3 +1,5 @@
-### In Progress
+### Instructions
 
-I am still working on a solution for day 14 part 2. Check back soon for updates.
+See [Advent of Code - Day 14](https://adventofcode.com/2023/day/14) for instructions. You must solve part 1 to view the instructions for part 2.
+
+You can also download the input from the same page. In order to run this code, an "input.txt" file must exist in the current directory, matching the format of the input file provided by Advent of Code.

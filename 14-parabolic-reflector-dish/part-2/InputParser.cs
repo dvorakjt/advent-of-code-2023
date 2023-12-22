@@ -1,10 +1,10 @@
 static class InputParser
 {
-  public static Matrix ParseInput(string[] input)
+  public static Platform ParseInput(string[] input)
   {
     TrimInput(input);
 
-    Matrix matrix = new(input.Length, input[0].Length);
+    Platform matrix = new(input.Length, input[0].Length);
 
     for(int i = 0; i < input.Length; i++)
     {
