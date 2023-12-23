@@ -1,6 +1,12 @@
 static class InputParser
 {
-  public static List<Brick> GetSortedBricksFromInput(string[] input)
+  public static BrickPile ParseInput(string[] input)
+  {
+    List<Brick> bricks = GetSortedBricksFromInput(input);
+    return new BrickPile(bricks);
+  }
+
+  private static List<Brick> GetSortedBricksFromInput(string[] input)
   {
     TrimInput(input);
 
