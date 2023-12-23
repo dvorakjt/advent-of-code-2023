@@ -21,51 +21,40 @@ class BrickPile
 
   private void PileBricks()
   {
-    int i = 0;
-
-    while(i < Bricks.Count)
+    for(int i = 0; i < Bricks.Count; i++)
     {
-      int currentElevation = Bricks[i].Z1;
+      Brick brick = Bricks[i];
+      int lowestLevel = 0;
 
-      while(i < Bricks.Count)
+      for(int z = brick.Z1; z >= 0; z--)
       {
-        Brick brick = Bricks[i];
-        if(brick.Z1 > currentElevation) break;
-
-        int lowestLevel = 0;
-
-        for(int z = currentElevation; z >= 0; z--)
-        {
-          for(int x = brick.X1; x <= brick.X2; x++)
-          { 
-            for(int y = brick.Y1; y <= brick.Y2; y++)
+        for(int x = brick.X1; x <= brick.X2; x++)
+        { 
+          for(int y = brick.Y1; y <= brick.Y2; y++)
+          {
+            if(CubeGrid[x,y,z] > 0)
             {
-              if(CubeGrid[x,y,z] > 0)
+              lowestLevel = z + 1;
+              if(!SupportedBy.ContainsKey(brick.Id))
               {
-                lowestLevel = z + 1;
-                if(!SupportedBy.ContainsKey(brick.Id))
-                {
-                  SupportedBy.Add(brick.Id, []);
-                }
-                SupportedBy[brick.Id].Add(CubeGrid[x,y,z]);
+                SupportedBy.Add(brick.Id, []);
               }
-            }
-          }
-          if(lowestLevel > 0) break;
-        }
-
-        for(int z = lowestLevel; z < lowestLevel + brick.Height; z++)
-        {
-          for(int x = brick.X1; x <= brick.X2; x++)
-          { 
-            for(int y = brick.Y1; y <= brick.Y2; y++)
-            {
-              CubeGrid[x,y,z] = brick.Id;
+              SupportedBy[brick.Id].Add(CubeGrid[x,y,z]);
             }
           }
         }
+        if(lowestLevel > 0) break;
+      }
 
-        i++;
+      for(int z = lowestLevel; z < lowestLevel + brick.Height; z++)
+      {
+        for(int x = brick.X1; x <= brick.X2; x++)
+        { 
+          for(int y = brick.Y1; y <= brick.Y2; y++)
+          {
+            CubeGrid[x,y,z] = brick.Id;
+          }
+        }
       }
     }
   }

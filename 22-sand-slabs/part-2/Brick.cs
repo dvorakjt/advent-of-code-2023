@@ -1,11 +1,11 @@
 struct Brick : IComparable<Brick>
 {
-  public int Id;
-  public int X1;
-  public int X2;
-  public int Y1;
-  public int Y2;
-  public int Z1;
+  public int Id { get; private set; }
+  public int X1 { get; private set; }
+  public int X2 { get; private set; }
+  public int Y1 { get; private set; }
+  public int Y2 { get; private set; }
+  public int Z1 { get; private set; }
 
   public int Height;
 
