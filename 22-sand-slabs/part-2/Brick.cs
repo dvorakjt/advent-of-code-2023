@@ -6,8 +6,15 @@ struct Brick : IComparable<Brick>
   public int Y1 { get; private set; }
   public int Y2 { get; private set; }
   public int Z1 { get; private set; }
+  public int Z2 { get; private set; }
 
-  public int Height;
+  public int Height 
+  {
+    get 
+    {
+      return Z2 + 1 - Z1;
+    }
+  }
 
   public Brick(int id, int x1, int y1, int z1, int x2, int y2, int z2)
   {
@@ -17,7 +24,7 @@ struct Brick : IComparable<Brick>
     Y1 = y1;
     Y2 = y2;
     Z1 = z1;
-    Height = z2 + 1 - Z1;
+    Z2 = z2;
   }
 
   public int CompareTo(Brick other)

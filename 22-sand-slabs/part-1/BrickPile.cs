@@ -9,9 +9,9 @@ class BrickPile
   {
     Bricks = new(bricks);
 
-    int cubeWidth = bricks.Max(brick => brick.X2) - bricks.Min(brick => brick.X1) + 1;
-    int cubeDepth = bricks.Max(brick => brick.Y2) - bricks.Min(brick => brick.Y1) + 1;
-    int cubeHeight = bricks.Sum(brick => brick.Height); 
+    int cubeWidth = bricks.Max(brick => brick.X2) + 1;
+    int cubeDepth = bricks.Max(brick => brick.Y2) + 1;
+    int cubeHeight = bricks.Max(brick => brick.Z2) + 1;
 
     CubeGrid = new int[cubeWidth, cubeDepth, cubeHeight];
 
