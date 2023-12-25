@@ -4,7 +4,7 @@ if(!File.Exists(inputFilePath))
 {
   throw new FileNotFoundException
   (
-    "Input file 'input.txt' not found in current directory. Please retrieve your input file from https://adventofcode.com/2023/day/19"
+    "Input file 'input.txt' not found in current directory. Please retrieve your input file from https://adventofcode.com/2023/day/22"
   );
 }
 

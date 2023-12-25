@@ -32,6 +32,7 @@ class BrickPile
         { 
           for(int y = brick.Y1; y <= brick.Y2; y++)
           {
+            //If CubeGrid[x,y,z] > 0, a brick id was stored there
             if(CubeGrid[x,y,z] > 0)
             {
               lowestLevel = z + 1;

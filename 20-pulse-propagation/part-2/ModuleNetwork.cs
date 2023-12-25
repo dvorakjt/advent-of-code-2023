@@ -17,6 +17,10 @@ class ModuleNetwork
     {
       presses++;
       sentPulseToModule = TrySendPulseToModule(moduleId, pulse);
+
+      Console.SetCursorPosition(0, Console.CursorTop);
+      Console.Write(presses);
+
     } while(!sentPulseToModule);
 
     return presses;
