@@ -1,16 +1,32 @@
 
 
-class Tile(int row, int column, bool canBeVisited, int minSteps) : IComparable<Tile>
+class Tile : IComparable<Tile>
 {
-  public readonly int Row = row;
-  public readonly int Column = column;
-  public bool CanBeVisited = canBeVisited;
-  public int MinSteps = minSteps;
+  public readonly int Row;
+  public readonly int Column;
+  public bool IsReachable;
+  public int ShortestPathFromStart;
+
+  public Tile(int row, int column, bool isReachable, int shortestDistanceFromStart)
+  {
+    Row = row;
+    Column = column;
+    IsReachable = isReachable;
+    ShortestPathFromStart = shortestDistanceFromStart;
+  }
+
+  public Tile(Tile tile)
+  {
+    Row = tile.Row;
+    Column = tile.Column;
+    IsReachable = tile.IsReachable;
+    ShortestPathFromStart = tile.ShortestPathFromStart;
+  }
 
   public int CompareTo(Tile? other)
   {
     if(other == null) return -1;
 
-    return MinSteps - other.MinSteps;
+    return ShortestPathFromStart - other.ShortestPathFromStart;
   }
 }

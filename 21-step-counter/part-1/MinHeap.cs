@@ -27,10 +27,10 @@ class MinHeap<T> where T : IComparable<T>
       return minValue;
     }
 
+    HeapIndices.Remove(Heap[0]);
     Heap[0] = Heap.Last();
     HeapIndices[Heap[0]] = 0;
-    Heap.RemoveAt(Heap.Count - 1);
-    HeapIndices.Remove(Heap[0]);
+    Heap.RemoveAt(Count - 1);
 
     HeapifyDown(0);
 
@@ -55,6 +55,7 @@ class MinHeap<T> where T : IComparable<T>
 
   public void DecreaseKey(T item)
   {
+
     int i = HeapIndices[item];
 
     HeapifyUp(i);
