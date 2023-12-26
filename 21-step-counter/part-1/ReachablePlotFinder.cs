@@ -1,5 +1,3 @@
-using System.Text;
-
 class ReachablePlotFinder
 {
   private readonly int StepsNeeded;
