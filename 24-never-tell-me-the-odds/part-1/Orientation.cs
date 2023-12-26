@@ -1,0 +1,6 @@
+enum Orientation
+{
+  CLOCKWISE,
+  COUNTERCLOCKWISE,
+  COLLINEAR
+}
