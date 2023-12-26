@@ -1,20 +1,26 @@
 class MinHeap<T> where T : IComparable<T> 
 {
   private readonly List<T> Heap = [];
-  private Dictionary<T, int> HeapIndices = new();
+  private readonly Dictionary<T, int> HeapIndices = [];
   
   public int Count { get {
     return Heap.Count;
   }}
 
-  public void Insert(T item)
+  public void InsertOrUpdate(T item)
   {
-    Heap.Add(item);
-    HeapIndices.Add(item, Heap.Count - 1);
-    HeapifyUp(Heap.Count - 1);
+    if(!HeapIndices.ContainsKey(item))
+    {
+      Heap.Add(item);
+      HeapIndices[item] = Count - 1;
+    }
+
+    int i = HeapIndices[item];
+
+    HeapifyUp(i);
   }
 
-  public T Extract()
+  public T ExtractMin()
   {
     if(Count == 0) throw new IndexOutOfRangeException("Cannot extract an element from an empty heap.");
 
@@ -37,34 +43,23 @@ class MinHeap<T> where T : IComparable<T>
     return minValue;
   }
 
-  private int HeapifyUp(int i)
+  private void HeapifyUp(int i)
   {
-    while(i > 0 && Heap[i].CompareTo(Heap[Parent(i)]) < 0)
+    while(i > 0 && Heap[i].CompareTo(Heap[MinHeap<T>.Parent(i)]) < 0)
     {
-      (Heap[i], Heap[Parent(i)]) = (Heap[Parent(i)], Heap[i]);
+      (Heap[i], Heap[MinHeap<T>.Parent(i)]) = (Heap[MinHeap<T>.Parent(i)], Heap[i]);
      
       HeapIndices[Heap[i]] = i;
-      HeapIndices[Heap[Parent(i)]] = Parent(i);
+      HeapIndices[Heap[MinHeap<T>.Parent(i)]] = MinHeap<T>.Parent(i);
 
-      i = Parent(i);
+      i = MinHeap<T>.Parent(i);
     }
-
-    //returns the final index of i
-    return i;
-  }
-
-  public void DecreaseKey(T item)
-  {
-
-    int i = HeapIndices[item];
-
-    HeapifyUp(i);
   }
 
   private void HeapifyDown(int i)
   {
-    int leftChild = LeftChild(i);
-    int rightChild  = RightChild(i);
+    int leftChild = MinHeap<T>.LeftChild(i);
+    int rightChild  = MinHeap<T>.RightChild(i);
     int min = i;
   
     if(leftChild < Count && Heap[leftChild].CompareTo(Heap[min]) < 0)
@@ -85,17 +80,17 @@ class MinHeap<T> where T : IComparable<T>
     }
   }
 
-  private int Parent(int i)
+  private static int Parent(int i)
   {
     return (i - 1) / 2;
   }
 
-  private int LeftChild(int i)
+  private static int LeftChild(int i)
   {
     return i * 2 + 1;
   }
 
-  private int RightChild(int i)
+  private static int RightChild(int i)
   {
     return i * 2 + 2;
   }

@@ -20,9 +20,9 @@ class ReachablePlotFinder
         Tile tile = new(gardenMap[row,column]);
         GardenMap[row,column] = tile;
 
-        if(tile.IsReachable)
+        if(tile.ShortestPathFromStart == 0)
         {
-          UnvisitedTiles.Insert(tile);
+          UnvisitedTiles.InsertOrUpdate(tile);
         }
       }
     }
@@ -37,7 +37,7 @@ class ReachablePlotFinder
   {
     while(UnvisitedTiles.Count > 0)
     {
-      Tile tile = UnvisitedTiles.Extract();
+      Tile tile = UnvisitedTiles.ExtractMin();
       tile.IsReachable = false;
       
       int shortestPathToNeighbor = tile.ShortestPathFromStart + 1;
@@ -60,7 +60,7 @@ class ReachablePlotFinder
       if(neighbor.IsReachable)
       {
         neighbor.ShortestPathFromStart = Math.Min(shortestPathFromStart, neighbor.ShortestPathFromStart);
-        UnvisitedTiles.DecreaseKey(neighbor);
+        UnvisitedTiles.InsertOrUpdate(neighbor);
       }
     }
   }
@@ -77,50 +77,5 @@ class ReachablePlotFinder
         }
       }
     }
-  }
-
-  public void SaveVisualization(string id)
-  {
-    string html = $"<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\t<title>{id}</title>\n</head>\n<body>";
-
-    int rectSide = 16;
-    string svgOpeningTag = 
-      $"<svg viewBox=\"0 0 {GardenMap.GetLength(1) * rectSide} {GardenMap.GetLength(0) * rectSide}\" xmlns=\"http://www.w3.org/2000/svg\">\n";
-
-    StringBuilder svgbuilder = new(svgOpeningTag);
-
-    for(int i = 0; i < GardenMap.GetLength(0); i++)
-    {
-      for(int j = 0; j < GardenMap.GetLength(1); j++)
-      {
-        int rectX = j * rectSide;
-        int rectY = i * rectSide;
-
-        if(GardenMap[i,j].ShortestPathFromStart == 0)
-        {
-          Console.WriteLine(GardenMap[i,j].Row);
-          Console.WriteLine(GardenMap[i,j].Column);
-        }
-
-
-        if(GardenMap[i,j].ShortestPathFromStart <= StepsNeeded)
-        {
-          string fill = GardenMap[i,j].ShortestPathFromStart == 0 ? "blue" : (GardenMap[i,j].ShortestPathFromStart % 2 == StepsNeeded % 2 ? "#32CD32" : "lightgray");
-          svgbuilder.Append("\t<g>\n");
-          svgbuilder.Append($"\t\t<rect x=\"{rectX}\" y=\"{rectY}\" width=\"{rectSide}\" height=\"{rectSide}\" stroke=\"black\" fill=\"{fill}\" />\n");
-          // svgbuilder.Append($"\t\t<text font-size=\"12px\" x={rectX} y={rectY}>{GardenMap[i,j].ShortestPathFromStart}</text>");
-          svgbuilder.Append("\t</g>\n");
-        }
-      }
-    }
-
-    svgbuilder.Append("</svg>");
-
-    string svg = svgbuilder.ToString();
-
-    html += svg;
-    html += "\n</body>\n</html>";
-
-    File.WriteAllText($"svg/{id}.html", html);
   }
 }

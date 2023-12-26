@@ -10,12 +10,6 @@ if(!File.Exists(inputFilePath))
 
 string[] input = File.ReadAllLines(inputFilePath);
 
-// for(int i = 0; i <= 6; i++)
-// {
-
 ReachablePlotFinder reachablePlotFinder = InputParser.CreateReachablePlotFinderFromInput(input, 64);
 
-Console.WriteLine(reachablePlotFinder.ReachablePlotCount);
-
-reachablePlotFinder.SaveVisualization("64");
-
+Console.WriteLine($"The number of tiles the elf can reach in exactly 64 steps is {reachablePlotFinder.ReachablePlotCount}");
