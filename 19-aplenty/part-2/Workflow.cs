@@ -1,43 +1,50 @@
 class Workflow(List<Condition> conditions, string defaultDestinationWorkflowId)
 {
-  private Dictionary<string, Workflow> DestinationWorkflows = [];
-  private List<Condition> Conditions = conditions;
+  public const string ENTRY_POINT_WORKFLOW_ID = "in";
+  private const string ACCEPTED_PARTS_ID = "A";
+  private const string REJECTED_PARTS_ID = "R";
+  private readonly List<Condition> Conditions = conditions;
+  private readonly string DefaultDestinationWorkflowId = defaultDestinationWorkflowId;
 
-  private string DefaultDestinationWorkflowId = defaultDestinationWorkflowId;
-
-  public void AddConnectedWorkflow(string workflowId, Workflow workflow)
+  public void ProcessImaginaryPart
+  (
+    ImaginaryPart imaginaryPart, 
+    Dictionary<string, Workflow> destinationWorkflows, 
+    List<ImaginaryPart> acceptedParts
+  )
   {
-    DestinationWorkflows.Add(workflowId, workflow);
-  }
-
-  public void ProcessImaginaryPart(ImaginaryPart imaginaryPart, List<ImaginaryPart> acceptedParts)
-  {
-    ImaginaryPart? unprocessedImaginaryPart = imaginaryPart;
+    ImaginaryPart? toNextCondition = imaginaryPart;
 
     foreach(var condition in Conditions)
     {
-      var (ToDestinationWorkflow, ToNextCondition) = condition.ProcessImaginaryPart(unprocessedImaginaryPart);
+      var (ToDestinationWorkflow, ToNextCondition) = condition.ProcessImaginaryPart(toNextCondition);
 
       if(ToDestinationWorkflow != null)
       {
-        if(condition.DestinationWorkflowId == "A")
+        if(condition.DestinationWorkflowId == ACCEPTED_PARTS_ID)
         {
           acceptedParts.Add(ToDestinationWorkflow);
         }
-        else if(DestinationWorkflows.ContainsKey(condition.DestinationWorkflowId))
+        else if(destinationWorkflows.TryGetValue(condition.DestinationWorkflowId, out Workflow? destinationWorkflow))
         {
-          DestinationWorkflows[condition.DestinationWorkflowId].ProcessImaginaryPart(ToDestinationWorkflow, acceptedParts);
+          destinationWorkflow.ProcessImaginaryPart(ToDestinationWorkflow, destinationWorkflows, acceptedParts);
         }
       }
       
-      unprocessedImaginaryPart = ToNextCondition;
-      if(unprocessedImaginaryPart == null) break;
+      toNextCondition = ToNextCondition;
+      if(toNextCondition == null) break;
     }
 
-    if(unprocessedImaginaryPart != null)
+    if(toNextCondition != null)
     {
-      DestinationWorkflows[DefaultDestinationWorkflowId].ProcessImaginaryPart(unprocessedImaginaryPart, acceptedParts);
+      if(DefaultDestinationWorkflowId == ACCEPTED_PARTS_ID)
+      {
+        acceptedParts.Add(toNextCondition);
+      }
+      else if(DefaultDestinationWorkflowId != REJECTED_PARTS_ID)
+      {
+        destinationWorkflows[DefaultDestinationWorkflowId].ProcessImaginaryPart(toNextCondition, destinationWorkflows, acceptedParts);
+      } 
     }
   }
-
 }

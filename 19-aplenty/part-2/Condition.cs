@@ -7,7 +7,7 @@ class Condition(string destinationWorkflowId, PartProperty partProperty, Compari
 
   public (ImaginaryPart? ToDestinationWorkflow, ImaginaryPart? ToNextCondition) ProcessImaginaryPart(ImaginaryPart imaginaryPart)
   {
-    if(ComparisonOperator == ComparisonOperator.LT)
+    if(ComparisonOperator == ComparisonOperator.LESS_THAN)
     {
       return imaginaryPart.SplitAtMax(PartProperty, Comparand);
     }

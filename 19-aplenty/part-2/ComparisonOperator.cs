@@ -1,5 +1,5 @@
 enum ComparisonOperator
 {
-  LT,
-  GT
+  LESS_THAN,
+  GREATER_THAN
 }

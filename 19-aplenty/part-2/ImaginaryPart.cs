@@ -168,4 +168,9 @@ class ImaginaryPart
 
     return (aboveMin, atOrBelowMin);
   }
+
+  public long CountPossibleCombinations()
+  {
+    return (long)(X.Max + 1 - X.Min) * (M.Max + 1 - M.Min) * (A.Max + 1 - A.Min) * (S.Max + 1 - S.Min);
+  }
 }
