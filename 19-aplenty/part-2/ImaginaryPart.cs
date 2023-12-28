@@ -143,7 +143,7 @@ class ImaginaryPart
         partPropertyValue = S;
         break;
       default:
-        throw new InvalidOperationException("PartProperty must be one of X, M, A or X");
+        throw new InvalidOperationException("PartProperty must be one of X, M, A or S");
     }
 
     if(partPropertyValue.Max > min)
