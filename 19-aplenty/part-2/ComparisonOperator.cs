@@ -1,0 +1,5 @@
+enum ComparisonOperator
+{
+  LT,
+  GT
+}
