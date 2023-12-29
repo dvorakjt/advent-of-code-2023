@@ -1,6 +1,7 @@
 class CruciblePathGraph
 {
-  private const int MAX_BLOCKS_IN_ONE_DIRECTION = 3;
+  private const int MIN_BLOCKS_IN_ONE_DIRECTION = 4;
+  private const int MAX_BLOCKS_IN_ONE_DIRECTION = 10;
   private readonly Dictionary<Point, (Node NSToEWNode, Node EWToNSNode)> Graph = [];
   private readonly int[,] HeatLossMap;
   private readonly Point Origin = new Point(0, 0);
@@ -100,6 +101,8 @@ class CruciblePathGraph
       Point adjacentPoint = new(rowToNorth, p.Column);
       heatLoss += HeatLossMap[adjacentPoint.Row, adjacentPoint.Column];
 
+      if(i < MIN_BLOCKS_IN_ONE_DIRECTION) continue;
+
       if(!Graph.ContainsKey(adjacentPoint))
       { 
         Graph[adjacentPoint] = 
@@ -128,6 +131,8 @@ class CruciblePathGraph
 
       Point adjacentPoint = new(rowToSouth, p.Column);
       heatLoss += HeatLossMap[adjacentPoint.Row, adjacentPoint.Column];
+
+      if(i < MIN_BLOCKS_IN_ONE_DIRECTION) continue;
 
       if(!Graph.ContainsKey(adjacentPoint))
       { 
@@ -158,6 +163,8 @@ class CruciblePathGraph
       Point adjacentPoint = new(p.Row, colToWest);
       heatLoss += HeatLossMap[adjacentPoint.Row, adjacentPoint.Column];
 
+      if(i < MIN_BLOCKS_IN_ONE_DIRECTION) continue;
+
       if(!Graph.ContainsKey(adjacentPoint))
       { 
         Graph[adjacentPoint] = 
@@ -186,6 +193,8 @@ class CruciblePathGraph
 
       Point adjacentPoint = new(p.Row, colToEast);
       heatLoss += HeatLossMap[adjacentPoint.Row, adjacentPoint.Column];
+
+      if(i < MIN_BLOCKS_IN_ONE_DIRECTION) continue;
 
       if(!Graph.ContainsKey(adjacentPoint))
       { 
